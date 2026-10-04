@@ -1,0 +1,4 @@
+# ip 2.0.1 isPublic()/isPrivate() misclassification (GHSA-2p57-rm9w-gvfp). No fixed
+# release exists; werift only calls isV4/isV6/toBuffer/toString/isLoopback, so the
+# affected functions are unreachable. Re-evaluate when ring-client-api/werift is bumped.
+CVE-2024-29415

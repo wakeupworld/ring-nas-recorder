@@ -1,0 +1,36 @@
+# Generic compose file (any Docker host). For TrueNAS SCALE 25.10 use
+# deploy/truenas-app.yaml with Apps > Discover > Install via YAML instead.
+services:
+  ring-nas-recorder:
+    build: .
+    image: ring-nas-recorder:latest
+    container_name: ring-nas-recorder
+    user: "${PUID:-568}:${PGID:-568}"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 768M
+          pids: 256
+    env_file: .env
+    volumes:
+      - ./data:/data
+      - ${RECORDINGS_HOST_PATH:-./recordings}:/recordings
+    # Optional bootstrap token as a file-backed secret instead of the `auth` command.
+    # secrets: [ring_refresh_token]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+# secrets:
+#   ring_refresh_token:
+#     file: ./secrets/ring_refresh_token   # chmod 600, deleted after first start

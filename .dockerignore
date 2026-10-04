@@ -1,0 +1,10 @@
+node_modules
+data
+recordings
+secrets
+.env
+*.md
+deploy
+test
+scripts
+.trivyignore

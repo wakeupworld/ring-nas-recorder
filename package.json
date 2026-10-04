@@ -1,0 +1,24 @@
+{
+  "name": "ring-nas-recorder",
+  "version": "1.0.0",
+  "description": "Record Ring camera live streams to MP4 on motion/doorbell events (no Ring Protect required), for NAS storage.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "ring-nas-recorder": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "auth": "ring-auth-cli",
+    "test": "node --test",
+    "audit": "node scripts/audit-check.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ring-client-api": "14.3.0",
+    "rxjs": "7.8.2"
+  }
+}

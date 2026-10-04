@@ -1,0 +1,52 @@
+# TrueNAS SCALE 25.10: Apps > Discover Apps > ⋮ > Install via YAML.
+# Adjust the /mnt/... paths, TZ and the image digest, then Save.
+# /data must be a 0700 apps:apps dataset that is never shared (README step 1).
+# No secrets live in this file: run the `auth` command once (README step 3),
+# which writes the token to the data dataset with mode 600.
+services:
+  ring-nas-recorder:
+    # Signed image from CI, pinned by digest (README "Get the image").
+    # If you built locally instead: image: ring-nas-recorder:latest + pull_policy: never
+    image: ghcr.io/wakeupworld/ring-nas-recorder@sha256:REPLACE_WITH_DIGEST
+    user: "568:568"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 768M
+          pids: 256
+    environment:
+      TZ: America/New_York
+      TRIGGERS: motion,ding
+      CLIP_SECONDS: "45"
+      COOLDOWN_SECONDS: "15"
+      MAX_CONCURRENT_STREAMS: "2"
+      CAMERAS: ""
+      CONTINUOUS_CAMERAS: ""
+      CONTINUOUS_SCHEDULE: "off"
+      RETENTION_DAYS: "30"
+      MIN_FREE_GB: "20"
+    volumes:
+      - /mnt/tank/apps/ring-nas-recorder:/data
+      - /mnt/tank/media/ring:/recordings
+    networks: [ring-egress]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  # Fixed subnet so egress can be firewalled (README "Network").
+  ring-egress:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.250.0/24
